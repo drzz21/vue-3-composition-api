@@ -2,7 +2,7 @@
 import YummyMeal from './components/YummyMeal.vue';
 //para declarar variables reactivas importamos la api ref
 //para usar watch importamos la api watch
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive, watch,watchEffect } from 'vue';
 
 // tenemos que exportar por defecto de esta forma
 export default {
@@ -64,40 +64,68 @@ export default {
 		//de retorno de watch a una constante
 		//y luego la llamamos cuando queramos eliminar el watcher
 		//en este caso la llamamos desde un boton en el template
-		const removeWatcher = watch(
-			//podemos observar arreglos y objetos
-			//para lo cual debemos usar la siguiente sintaxis
-			//para observar arreglos, debemos retornar una copia del arreglo
-			//usando el operador spread o slice
-			//esto para que los valores newValue y oldValue
-			//se asignen correctamente
-			// () => [...cart],
-			// () => cart,
-			//podemos observar 2 variables a la vez si definimos
-			//un array con las variables a observar
-			[name, () => [...cart]],
+		// const removeWatcher = watch(
+		// 	//podemos observar arreglos y objetos
+		// 	//para lo cual debemos usar la siguiente sintaxis
+		// 	//para observar arreglos, debemos retornar una copia del arreglo
+		// 	//usando el operador spread o slice
+		// 	//esto para que los valores newValue y oldValue
+		// 	//se asignen correctamente
+		// 	// () => [...cart],
+		// 	// () => cart,
+		// 	//podemos observar 2 variables a la vez si definimos
+		// 	//un array con las variables a observar
+		// 	[name, () => [...cart]],
 
-			//despues de las variables o variable a observar tenemos
-			//la funcion que se ejecutará cuando cambie el valor
-			//de la variable observada
-			//en este caso recibimos el nuevo y antiguo valor
-			(newValue, oldValue) => {
-				//en este caso como ejemplo solo imprimiremos
-				//el nuevo valor del carrito en un alert
-				alert(newValue.join('\n'));
-				//y en consola
-				console.log('Cart changed from', oldValue, 'to', newValue);
-			},
-			{
-				//immediate es para que se ejecute tan pronto se renderice el componente
-				//en caso de que sea false, se va a esperar a que cambie el valor
-				immediate: false,
-				//deep es para observar cambios profundos en objetos y arreglos
-				//en este caso como cart es un arreglo, es recomendable activarlo
-				//si fuera un string no tendria sentido
-				deep: true,
-			}
-		);
+		// 	//despues de las variables o variable a observar tenemos
+		// 	//la funcion que se ejecutará cuando cambie el valor
+		// 	//de la variable observada
+		// 	//en este caso recibimos el nuevo y antiguo valor
+		// 	(newValue, oldValue) => {
+		// 		//en este caso como ejemplo solo imprimiremos
+		// 		//el nuevo valor del carrito en un alert
+		// 		alert(newValue.join('\n'));
+		// 		//y en consola
+		// 		console.log('Cart changed from', oldValue, 'to', newValue);
+		// 	},
+		// 	{
+		// 		//immediate es para que se ejecute tan pronto se renderice el componente
+		// 		//en caso de que sea false, se va a esperar a que cambie el valor
+		// 		immediate: false,
+		// 		//deep es para observar cambios profundos en objetos y arreglos
+		// 		//en este caso como cart es un arreglo, es recomendable activarlo
+		// 		//si fuera un string no tendria sentido
+		// 		deep: true,
+		// 	}
+		// );
+
+		//otra opcion que tenemos para observar variables reactivas
+		//es usar watchEffect
+		//la ventaja es que no necesitamos especificar
+		//las variables a observar, ya que automaticamente
+		//observa todas las variables reactivas usadas dentro
+		//de la funcion que le pasamos
+		//la desventaja es que se ejecuta inmediatamente
+		//y no podemos controlar las opciones como immediate y deep
+		//ademas de que no tenemos acceso a los valores
+		//newValue y oldValue
+		//por lo que si necesitamos esos valores es mejor usar watch
+		//o tambien si nos afecta el que se ejecute inmediatamente
+		//en este caso lo usaremos para observar name y cart
+		//como anteriormente.
+		//Esto igual hay que importarlo desde vue
+
+		const removeWatcher = watchEffect(() => {
+			//esta funcion se ejecuta cada vez que
+			//cambie alguna de las variables reactivas usadas
+			//dentro de esta funcion
+			//en este caso name y cart
+			//notar que con cart no usamos value porque es un reactive
+			//y que si en name no le ponemos el value no lo va a observar
+			alert(`The name is now: ${cart} \n Cart has ${cart.length} items.`);
+			console.log('The name is now:', name.value);
+			console.log('Cart has', cart.length, 'items.');
+		});
 
 
 		//otro ejemplo donde observamos un array reactive
