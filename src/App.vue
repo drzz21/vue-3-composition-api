@@ -2,7 +2,15 @@
 import YummyMeal from './components/YummyMeal.vue';
 //para declarar variables reactivas importamos la api ref
 //para usar watch importamos la api watch
-import { ref, reactive, watch,watchEffect } from 'vue';
+
+//una forma de pasar variables entre componentes
+//sin necesidad de ir anidando props de una a otra
+//es usando provide e inject
+//de esta forma definimos una variable en un componente
+//y puede ser accedida desde cualquier componente hijo
+//sin necesidad de hacer prop drilling
+//importamos provide
+import { ref, reactive, watch, watchEffect, provide } from 'vue';
 
 // tenemos que exportar por defecto de esta forma
 export default {
@@ -13,6 +21,20 @@ export default {
 	//en vue 3 inicializamos nuestro js con la funcion setup
 	//donde creamos las constantes, funciones, etc
 	setup() {
+		//lo que podemos proveeer puede ser un string
+		//numero, booleano, objeto, arreglo o incluso
+		//una referencia reactiva creada con ref o reactive
+		//o hasta una funcion
+		//en este caso proveeremos el signo de moneda
+		//que guardaremos en una ref, para poder validar
+		//la reactividad
+		const currencySymbol = ref('%');
+
+		//lo proveemos asignando el nombre con el que lo queremos
+		//identificar y la variable que queremos proveer
+		//agregando la referencia a la ref
+		provide('currencySymbol', currencySymbol);
+
 		//declaramos nuestra variable que queremos reactiva
 		//envolviendola en la api ref
 		const name = ref('The Snazzy Burger');
@@ -122,11 +144,10 @@ export default {
 			//en este caso name y cart
 			//notar que con cart no usamos value porque es un reactive
 			//y que si en name no le ponemos el value no lo va a observar
-			alert(`The name is now: ${cart} \n Cart has ${cart.length} items.`);
+			// alert(`The name is now: ${cart} \n Cart has ${cart.length} items.`);
 			console.log('The name is now:', name.value);
 			console.log('Cart has', cart.length, 'items.');
 		});
-
 
 		//otro ejemplo donde observamos un array reactive
 		const meals = reactive([
@@ -143,7 +164,8 @@ export default {
 		// });
 
 		//para usarlo en nuestro código lo tenemos que retornar
-		return { placeOrder, name, addItemToCart, meal, meals, removeWatcher };
+		//retornamos currencySymbol para poder usarlo en el template
+		return { placeOrder, name, addItemToCart, meal, meals, removeWatcher,currencySymbol };
 	},
 	//para acceder a las variables reactivas fuera de setup
 	//no es necesario usar .value
@@ -176,6 +198,20 @@ export default {
 	<!-- ejecutamos removewatcher al hacer click para dejar de usar el watcher -->
 	<button @click="removeWatcher">Remove Watcher / Hide Cart Alerts</button>
 
+	<br />
+
+	<!-- con un select modificaremos el valor de currencysymbol que
+	como recordamos está provisto usando provide -->
+
+	<label for="currency-symbol">Currency</label>
+	<select id="currency-symbol" v-model="currencySymbol">
+		<option value="$">USD ($)</option>
+		<option value="€">EUR (€)</option>
+		<option value="£">GBP (£)</option>
+		<option value="¥">JPY (¥)</option>
+		<option value="%">Custom (%)</option>
+	</select>
+
 	<!-- llamamos la funcion dentro de nuestro evento emitido, y ahi recibimos
 	 el nombre del producto que enviamos desde la funcion dentro del componente
 	 aqui tambien enviamos las props al componente hijo -->
@@ -188,7 +224,7 @@ export default {
 	/>
 	_____
 	<!-- ejemplo con array reactive -->
-	 iteramos para tener todas las meals
+	iteramos para tener todas las meals
 	<YummyMeal
 		v-for="(item, index) in meals"
 		:key="index"

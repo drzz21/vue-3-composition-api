@@ -1,6 +1,14 @@
 <template>
 	<p>
-		<strong>{{ name }}</strong> - ${{ formattedPrice }}
+		<strong>{{ name }} </strong> 
+
+		<!-- quitamos la computed formated price porque ahora
+		la manejará otro componente exclusivo, y lo hacemos así para validar
+		el provide/inject -->
+
+		<!-- importamos el componente y solo le pasaremos como
+		prop el precio -->
+		<YummyMealPrice :price="price"/>
 
 		<button @click="addToCart">Add to Cart</button>
 	</p>
@@ -9,9 +17,17 @@
 <script>
 // para usar computed properties con composition API
 // importamos computed desde vue
-import { computed } from 'vue';
+// import { computed } from 'vue';
+
+// importamos y declaramos nuestro componente
+import YummyMealPrice from './YummyMealPrice.vue';
 
 export default {
+
+	components: {
+		YummyMealPrice,
+	},
+
 	//de esta forma declaramos las props que recibiremos y el tipo de dato que serán
 	props: {
 		name: String,
@@ -23,8 +39,8 @@ export default {
 	//pero no el primero ya que perderiamos la reactividad
 	setup(props, { attrs, slots, emit }) {
 		//imprimimos el valor de las props
-		console.log(props.name);
-		console.log(props.price);
+		// console.log(props.name);
+		// console.log(props.price);
 
 		//emiitmos un evento al hacer click en el boton
 		const addToCart = () => {
@@ -44,24 +60,14 @@ export default {
 		//un valor a la propiedad computada
 		//debemos usar la sintaxis de objeto
 		//y no usar arrow functions en get/set
-		const formattedPrice = computed({
-			//retornamos el valor formateado
-			//como anteriormente
-			get() {
-				return `${props.price.toFixed(2)}`;
-			},
-			//en este caso mostramos mensaje de error
-			//al intentar asignar un valor
-			set(newValue) {
-				console.log('We cant accept', newValue, 'as a price!');
-			},
-		});
+// eliminamos la computed propertie
 		//probamoslas implementaciones del getter y setter
-		console.log(formattedPrice.value);
-		formattedPrice.value = 20; // Probando el setter
+		// console.log(formattedPrice.value);
+		// formattedPrice.value = 20; // Probando el setter
 
 		//retornamos para poder usar en el template
-		return { addToCart, formattedPrice };
+		// return { addToCart, formattedPrice };
+		return {addToCart};
 	},
 	//en options api esto del computed funcionaria así
 	// computed: {
