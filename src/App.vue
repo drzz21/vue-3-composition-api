@@ -10,7 +10,9 @@ import YummyMeal from './components/YummyMeal.vue';
 //y puede ser accedida desde cualquier componente hijo
 //sin necesidad de hacer prop drilling
 //importamos provide
-import { ref, reactive, watch, watchEffect, provide } from 'vue';
+//los lyfecycle hooks tambien se importan desde vue
+//en este caso usaremos onMounted
+import { ref, reactive, watch, watchEffect, provide,onMounted } from 'vue';
 
 // tenemos que exportar por defecto de esta forma
 export default {
@@ -53,6 +55,12 @@ export default {
 		//desestructurarlo directamente, ya que perderiamos
 		//la reactividad y tampoco podemos reasignar el objeto completo
 		//porque tambien perderiamos la reactividad
+
+		//ejecutamos la funcion enviando el callback de lo que queremos hacer
+		//durante ese lifecycle hook, hay varios y están en los docs de vue
+		onMounted(() => {
+			console.log('Meal price is:', meal.price);
+		});
 
 		const meal = reactive({
 			name: 'Pizza',

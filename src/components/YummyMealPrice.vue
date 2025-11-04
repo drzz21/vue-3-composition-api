@@ -6,7 +6,7 @@
 <script>
 
 // importamos inject para hacer la injection de la variable
-import { computed,inject } from 'vue';
+import { computed,inject,ref } from 'vue';
 
 export default {
 
